@@ -254,7 +254,7 @@ def generate_ito_correction_map(d_aug, d_loc, level):
         idxs = tuple(int(x) for x in key)
         cand = [j for j in range(len(idxs)-1)
                 if 2 <= idxs[j] <= d_loc+1 and 2 <= idxs[j+1] <= d_loc+1]
-        combos = []
+        combinations = []
         for subset in non_adjacent_subsets(cand):
             new_index = []
             skip = False
@@ -267,8 +267,8 @@ def generate_ito_correction_map(d_aug, d_loc, level):
                     skip = True
                 else:
                     new_index.append(idxs[j])
-            combos.append((tuple(new_index), (-0.5)**len(subset)))
-        cmap[key] = combos
+            combinations.append((tuple(new_index), (-0.5)**len(subset)))
+        cmap[key] = combinations
     return keys, cmap
 
 def parse_key_to_word(key_str):
