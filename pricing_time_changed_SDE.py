@@ -18,8 +18,8 @@ from pricing_utils import (
     rv_call_from_logs, rv_swap_from_logs,
     corr_swap_payoff, corr_call_payoff,
     cov_swap_payoff, cov_call_payoff,
-    mc_price_with_ci, plugin_price
-)
+    mc_price_with_ci, plugin_price,
+    slice_single_asset_stream,slice_assets_stream )
 import esig
 
 
