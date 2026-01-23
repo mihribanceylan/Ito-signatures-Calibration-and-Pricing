@@ -39,7 +39,7 @@ def correlation_12(S_time_log):
     den = np.where(den>1e-16, den, np.inf)
     return num/den
 
-def covariance_basket(S_time_log):
+def covariance_12(S_time_log):
     """
     Calculates the covariance between the two assets' log price increments.
 
