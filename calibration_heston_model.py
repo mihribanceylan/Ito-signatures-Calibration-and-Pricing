@@ -8,7 +8,7 @@ from sklearn.linear_model import Lasso
 from sklearn.metrics import mean_squared_error
 from sklearn.preprocessing import StandardScaler
 
-from lasso.utils import fit_lasso_full_path, apply_lasso_model
+from lasso_utils import fit_lasso_full_path, apply_lasso_model
 
 import iisignature
 import esig
