@@ -12,9 +12,14 @@ from matplotlib.lines import Line2D
 from matplotlib.patches import Patch
 
 from ito_utils import get_keys_and_tuples, generate_ito_correction_map, ito_from_stratonovich
-from pricing_utils import log_increments, realized_variance_from_logs, realized_vol_from_logs, correlation_12, covariance_12,
-rv_call_from_logs, rv_swap_from_logs, corr_swap_payoff, corr_call_payoff, cov_swap_payoff, cov_call_payoff, mc_price_with_ci, plugin_price
-
+from pricing_utils import (
+    log_increments, realized_variance_from_logs, realized_vol_from_logs,
+    correlation_12, covariance_12,
+    rv_call_from_logs, rv_swap_from_logs,
+    corr_swap_payoff, corr_call_payoff,
+    cov_swap_payoff, cov_call_payoff,
+    mc_price_with_ci, plugin_price
+)
 import esig
 
 
