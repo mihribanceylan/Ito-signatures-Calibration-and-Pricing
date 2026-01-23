@@ -190,8 +190,8 @@ def realized_correlation_12(S_time_log):
     return num/den
 
 
-def rv_swap_payoff(S_time_log):
-    return realized_variance_from_logs(S_time_log)
+def rv_swap_payoff(S_time_log,K):
+    return realized_variance_from_logs(S_time_log)-K
 
 
 def rv_call_payoff(S_time_log, K):
