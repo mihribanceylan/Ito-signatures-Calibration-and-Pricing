@@ -78,13 +78,13 @@ def cov_swap_payoff(S_time_log, K):
     """
     Calculates the covariance swap payoff from the log price increments.
     """
-    return covariance_basket(S_time_log) - K
+    return covariance_12(S_time_log) - K
 
 def cov_call_payoff(S_time_log, K):
     """
     Calculates the covariance call payoff from the log price increments.
     """
-    return np.maximum(covariance_basket(S_time_log) - K, 0.0)
+    return np.maximum(covariance_12(S_time_log) - K, 0.0)
 
 def plugin_price(model, X):
     """
