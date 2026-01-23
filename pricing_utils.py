@@ -85,7 +85,34 @@ def cov_call_payoff(S_time_log, K):
     Calculates the covariance call payoff from the log price increments.
     """
     return np.maximum(covariance_12(S_time_log) - K, 0.0)
+#pricing helpers
+def slice_single_asset_stream(S_time_like, j):
+    """
+    Slices the stream data for a single asset.
 
+    Parameters:
+    - S_time_like: Time-stamped price data
+    - j: Index of the asset
+
+    Returns:
+    - S_time_like sliced for the j-th asset
+    """
+    return S_time_like[:, :, [0, 1 + j]]
+
+
+def slice_assets_stream(S_time_like, idx_list):
+    """
+    Slices the stream data for multiple assets.
+
+    Parameters:
+    - S_time_like: Time-stamped price data
+    - idx_list: List of asset indices
+
+    Returns:
+    - S_time_like sliced for the specified assets
+    """
+    cols = [0] + [1 + j for j in idx_list]
+    return S_time_like[:, :, cols]
 def plugin_price(model, X):
     """
     Computes the plug-in price for a given model and features.
