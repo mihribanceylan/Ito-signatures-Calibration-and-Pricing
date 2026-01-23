@@ -85,3 +85,39 @@ def cov_call_payoff(S_time_log, K):
     Calculates the covariance call payoff from the log price increments.
     """
     return np.maximum(covariance_basket(S_time_log) - K, 0.0)
+
+def plugin_price(model, X):
+    """
+    Computes the plug-in price for a given model and features.
+
+    Parameters:
+    - model: The trained regression model
+    - X: Features for prediction
+
+    Returns:
+    - plug_in: The predicted price
+
+    """
+    preds = model.predict(X)
+    plug_in = float(np.mean(preds))
+    return plug_in
+
+def mc_price_with_ci(values):
+    """
+    Computes the Monte Carlo price and confidence interval.
+
+    Parameters:
+    - values: Array of values for Monte Carlo simulations
+
+    Returns:
+    - mean: Mean of the values
+    - hw95: Half-width of the 95% confidence interval
+    """
+    vals = np.asarray(values)
+    if vals.ndim == 1:
+        vals = vals[:, None]
+    n = vals.shape[0]
+    mean = vals.mean(axis=0)
+    se   = vals.std(axis=0, ddof=1) / np.sqrt(n)
+    hw95 = 1.96 * se
+    return mean, hw95
