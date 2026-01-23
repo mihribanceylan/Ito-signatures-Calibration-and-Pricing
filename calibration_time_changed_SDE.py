@@ -8,7 +8,7 @@ from sklearn.metrics import mean_squared_error
 from sklearn.preprocessing import StandardScaler
 
 from ito_utils import get_keys_and_tuples, generate_ito_correction_map, ito_from_stratonovich
-from lasso_calibration import fit_lasso_full_path, apply_lasso_model
+from lasso_utils import fit_lasso_full_path, apply_lasso_model
 
 import iisignature   # pip install iisignature
 import esig          # pip install esig
