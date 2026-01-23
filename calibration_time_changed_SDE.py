@@ -53,7 +53,7 @@ def cantor_function_grid(n_points: int, levels: int = 20, enforce_monotone: bool
 # -----------------------------
 # Plot: Cantor function
 # -----------------------------
-def plot_cantor(outdir="calib_outputs_cantor_general",
+def plot_cantor(outdir="calibration_time_changed_SDE",
                 n_points=2001, levels=20, enforce_monotone=True):
     """
     Plots the Cantor function on a grid. Two plots are created:
@@ -139,7 +139,7 @@ def simulate_SDE_cantor(n_points: int, levels: int, rng, t_final: float = 1.0, m
     dt = t_final / (n_points - 1)
     for k in range(n_points - 1):
         mx = mu(t[k], X[k]) * dt
-        sx = sigma(t[k], X[k]) * (W[k+1] - W[k])  # dW_C
+        sx = sigma(t[k], X[k]) * (W[k+1] - W[k])  
         X[k+1] = X[k] + mx + sx
 
     return t, C, W, X
@@ -435,7 +435,6 @@ def calibrate_on_single_path(rng, n_points, levels, depth, alpha,
     - levels: Number of levels in the Cantor process.
     - depth: Depth of the signature features to extract.
     - alpha: Regularization strength for Lasso regression.
-    - use_state_dependent: Boolean flag to toggle between state-dependent or constant drift/diffusion.
     - outdir: Output directory to save results.
     
     Returns:
@@ -517,7 +516,6 @@ def run_test_paths(R, base_seed, n_points_train, levels, depth,
     - levels: Number of levels for the Cantor process.
     - depth: Depth of the signature features.
     - alpha: Regularization strength for Lasso regression.
-    - use_state_dependent: Boolean flag to toggle between state-dependent or constant drift/diffusion functions.
     - reg_strato: The trained Stratonovich regression model.
     - scaler_strato: The scaler used for Stratonovich features.
     - reg_ito: The trained Itô regression model.
