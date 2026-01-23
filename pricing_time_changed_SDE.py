@@ -12,7 +12,7 @@ from matplotlib.lines import Line2D
 from matplotlib.patches import Patch
 
 from ito_utils import get_keys_and_tuples, generate_ito_correction_map, ito_from_stratonovich
-from pricing_utils import log_increments, realized_variance_from_logs, realized_vol_from_logs, correlation_12, covariance_basket,
+from pricing_utils import log_increments, realized_variance_from_logs, realized_vol_from_logs, correlation_12, covariance_12,
 rv_call_from_logs, rv_swap_from_logs, corr_swap_payoff, corr_call_payoff, cov_swap_payoff, cov_call_payoff, mc_price_with_ci, plugin_price
 
 import esig
@@ -343,7 +343,7 @@ if __name__ == "__main__":
     RV_all   = realized_vol_from_logs(S_time_log_all)         # (n_paths, 2)
     RVar_all = realized_variance_from_logs(S_time_log_all)    # (n_paths, 2)
     Corr_all = correlation_12(S_time_log_all)                 # (n_paths,)
-    Cov_all  = covariance_basket(S_time_log_all)              # (n_paths,)
+    Cov_all  = covariance_12(S_time_log_all)              # (n_paths,)
     # Split data for training and testing
     RV_tr, RVar_tr = RV_all[train_idx], RVar_all[train_idx]
     Corr_tr, Cov_tr = Corr_all[train_idx], Cov_all[train_idx]
