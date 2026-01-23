@@ -10,6 +10,8 @@ from matplotlib.lines import Line2D
 from matplotlib.patches import Patch
 
 from ito_utils import get_keys_and_tuples, generate_ito_correction_map, ito_from_stratonovich
+from pricing_utils import log_increments, realized_variance_from_logs, realized_vol_from_logs, correlation_12, covariance_12, mc_price_with_ci, plugin_price
+
 import os
 
 # ===============================
@@ -162,98 +164,14 @@ def slice_assets_stream(S_time_like, idx_list):
 # Payoffs: RV, Cov, Corr
 # ===============================
 
-def log_increments(S_time_log):
-    return S_time_log[:,1:,1:] - S_time_log[:,:-1,1:]
 
 
-def realized_variance_from_logs(S_time_log):
-    dX = log_increments(S_time_log)
-    return np.sum(dX**2,axis=1)
 
 
-def realized_vol_from_logs(S_time_log):
-    return np.sqrt(realized_variance_from_logs(S_time_log))
-
-
-def realized_covariance_12(S_time_log):
-    dX = log_increments(S_time_log)
-    x = dX[:,:,0]; y = dX[:,:,1]
-    return np.sum(x*y, axis=1)
-
-
-def realized_correlation_12(S_time_log):
-    dX = log_increments(S_time_log)
-    x = dX[:,:,0]; y = dX[:,:,1]
-    num = np.sum(x*y, axis=1)
-    den = np.sqrt(np.sum(x*x, axis=1) * np.sum(y*y, axis=1))
-    den = np.where(den>1e-16, den, np.inf)
-    return num/den
-
-
-def rv_swap_payoff(S_time_log,K):
-    return realized_variance_from_logs(S_time_log)-K
-
-
-def rv_call_payoff(S_time_log, K):
-    RV = realized_vol_from_logs(S_time_log)
-    return np.maximum(RV - K, 0.0)
-
-
-def cov_swap_payoff(S_time_log, K):
-    return realized_covariance_12(S_time_log) - K
-
-
-def cov_call_payoff(S_time_log, K):
-    return np.maximum(realized_covariance_12(S_time_log) - K, 0.0)
-
-
-def corr_swap_payoff(S_time_log, K):
-    return realized_correlation_12(S_time_log) - K
-
-
-def corr_call_payoff(S_time_log, K):
-    return np.maximum(realized_correlation_12(S_time_log) - K, 0.0)
 
 # ===============================
-# Pricing helpers & ridge 
-# ===============================
-
-def plugin_price(model, X):
-    """
-    Computes the plug-in price for a given model and features.
-
-    Parameters:
-    - model: The trained regression model
-    - X: Features for prediction
-
-    Returns:
-    - plug_in: The predicted price
-
-    """
-    preds = model.predict(X)
-    plug_in = float(np.mean(preds))
-    return plug_in
-
-
-def mc_price_with_ci(values):
-    """
-    Computes the Monte Carlo price and confidence interval.
-
-    Parameters:
-    - values: Array of values for Monte Carlo simulations
-
-    Returns:
-    - mean: Mean of the values
-    - hw95: Half-width of the 95% confidence interval
-    """
-    vals = np.asarray(values)
-    if vals.ndim == 1:
-        vals = vals[:, None]
-    n = vals.shape[0]
-    mean = vals.mean(axis=0)
-    se   = vals.std(axis=0, ddof=1) / np.sqrt(n)
-    hw95 = 1.96 * se
-    return mean, hw95
+# Ridge 
+# ==============================
 
 
 def fit_ridge(X_tr, y_tr):
@@ -405,7 +323,7 @@ if __name__ == "__main__":
         rho_S=rho_S, rho_v=rho_v, rho_sv=rho_sv, r=r, seed=42
     )
 
-    # Single, correct logarithm (from levels)
+    
     S_time_log_all = build_log_time(S_time)
     # --- split train/test ---
     idx_all = np.arange(n_paths)
@@ -413,8 +331,8 @@ if __name__ == "__main__":
     # ----- realized functionals & strikes -----
     RVar = realized_variance_from_logs(S_time_log_all)  # (n_paths, 2)
     RV   = np.sqrt(RVar)
-    RCov = realized_covariance_12(slice_assets_stream(S_time_log_all, [0,1]))  # (n_paths,)
-    RCorr= realized_correlation_12(slice_assets_stream(S_time_log_all, [0,1])) # (n_paths,)
+    RCov = covariance_12(slice_assets_stream(S_time_log_all, [0,1]))  # (n_paths,)
+    RCorr= correlation_12(slice_assets_stream(S_time_log_all, [0,1])) # (n_paths,)
 
     # Strikes (use sample means/medians for illustration)
     K_rv_swap = RVar[train_idx].mean(axis=0)
@@ -501,8 +419,8 @@ if __name__ == "__main__":
     true_vals = {}
     RVar_mc = realized_variance_from_logs(S_time_log_mc_all)
     RV_mc   = np.sqrt(RVar_mc)
-    RCov_mc = realized_covariance_12(slice_assets_stream(S_time_log_mc_all, [0,1]))
-    RCorr_mc= realized_correlation_12(slice_assets_stream(S_time_log_mc_all, [0,1]))
+    RCov_mc = covariance_12(slice_assets_stream(S_time_log_mc_all, [0,1]))
+    RCorr_mc= correlation_12(slice_assets_stream(S_time_log_mc_all, [0,1]))
 
     RVswap_mc = RVar_mc - K_rv_swap
     RVcall_mc = np.maximum(RV_mc - K_rv_call, 0.0)
