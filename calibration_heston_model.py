@@ -8,6 +8,8 @@ from sklearn.linear_model import Lasso
 from sklearn.metrics import mean_squared_error
 from sklearn.preprocessing import StandardScaler
 
+from lasso.utils import fit_lasso_full_path, apply_lasso_model
+
 import iisignature
 import esig
 
@@ -370,60 +372,6 @@ def select_ito_features_ending_in_B(ito_df):
         if len(word) > 0 and word[-1] == 2:  # last index B
             selected_cols.append(col)
     return ito_df[selected_cols], selected_cols
-
-
-# ---------------------------
-# Lasso: Calibration on Full Path & Application to New Paths
-# ---------------------------
-def fit_lasso_full_path(X_df, y, alpha=1e-5):
-    """
-    Fits a Lasso regression model to the full training path.
-    
-    Parameters:
-    - X_df: DataFrame of features
-    - y: Target values (e.g., Heston price paths)
-    - alpha: Regularization strength
-    
-    Returns:
-    - Dictionary containing the fitted model, scaler, predicted values, and training MSE
-    """
-    X = X_df.values #numpy array
-    scaler = StandardScaler(with_mean=True, with_std=True) 
-    X_s = scaler.fit_transform(X)
-
-    reg = Lasso(alpha=alpha, fit_intercept=True, max_iter=10000)
-    reg.fit(X_s, y) #saves parameter and intercept
-
-    yhat = reg.predict(X_s) #prediction with regressed parameters
-    mse_train = mean_squared_error(y, yhat)
-
-    return {
-        "reg": reg,
-        "scaler": scaler,
-        "yhat_train": yhat,
-        "mse_train": mse_train
-    }
-
-def apply_lasso_model(X_df, y, reg, scaler):
-    """
-    Applies a trained Lasso model to new data and computes the MSE.
-    
-    Parameters:
-    - X_df: DataFrame of new feature data
-    - y: True values for the new data
-    - reg: The trained Lasso model
-    - scaler: The scaler used during training
-    
-    Returns:
-    - MSE and predicted values for the new data
-    """
-    # with trained model approximate new path and calculate test-MSE
-    
-    X = X_df.values #values of test-path, the signatures
-    X_s = scaler.transform(X)
-    yhat = reg.predict(X_s)
-    mse = mean_squared_error(y, yhat)
-    return mse, yhat
 
 
 # ---------------------------
